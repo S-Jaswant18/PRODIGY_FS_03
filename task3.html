@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Local Store | E-Commerce</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #e3f2fd, #ffffff);
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+      background-color: #2196f3;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin: 15px;
+      width: 280px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+
+    .card-body {
+      padding: 15px;
+    }
+
+    .card-body h3 {
+      margin: 0;
+      color: #333;
+    }
+
+    .rating {
+      margin: 5px 0;
+      color: #fbc02d;
+    }
+
+    .price {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 10px 0;
+      color: #4caf50;
+    }
+
+    .btn {
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: #1769aa;
+    }
+
+    .review {
+      margin-top: 10px;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    textarea {
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 6px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .review-box {
+      margin-top: 1rem;
+    }
+
+    .user-reviews {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      background: #f1f1f1;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+
+    .cart {
+      position: fixed;
+      right: 0;
+      top: 70px;
+      width: 300px;
+      background-color: #fff;
+      border-left: 1px solid #ddd;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .cart h3 {
+      margin-top: 0;
+    }
+
+    .cart-item {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+
+    .cart-item span {
+      display: block;
+      font-weight: bold;
+    }
+
+    .qty-btns {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .qty-btns button {
+      padding: 5px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .qty-btns button:hover {
+      background-color: #eee;
+    }
+
+    .remove-btn {
+      background-color: crimson;
+      color: white;
+      padding: 5px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .remove-btn:hover {
+      background-color: darkred;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    .inactive {
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  🛍️ Local Store E-Commerce
+</header>
+
+<div class="container" id="product-list"></div>
+
+<div class="cart" id="cart">
+  <h3 id="cart-title" data-count="0">🛒 Your Cart</h3>
+  <div id="cart-items"></div>
+  <div class="total" id="cart-total">Total: ₹0</div>
+</div>
+
+<script>
+  const products = [
+    {
+      id: 1,
+      name: "Organic Honey",
+      description: "Pure natural honey from local farms.",
+      price: 299,
+      rating: 4.5,
+      image: "https://cdn.pixabay.com/photo/2017/01/06/17/49/honey-1958464_1280.jpg",
+      review: "Excellent taste and pure quality! 👌"
+    },
+    {
+      id: 2,
+      name: "Handmade Soap",
+      description: "Aromatic herbal soap bars.",
+      price: 150,
+      rating: 4.0,
+      image: "https://cdn.pixabay.com/photo/2020/03/13/03/58/handmade-soap-4926842_1280.jpg",
+      review: "Refreshing scent and gentle on skin! 🧼"
+    },
+    {
+      id: 3,
+      name: "Local Spices Pack",
+      description: "Spice up your meals with local blends.",
+      price: 499,
+      rating: 4.8,
+      image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092",
+      review: "Adds real depth to curries! 🌶️"
+    },
+    {
+      id: 4,
+      name: "Homemade Pickles",
+      description: "Tangy and spicy pickles from grandma’s kitchen.",
+      price: 199,
+      rating: 4.2,
+      image: "https://shorturl.at/GPvJB",
+      review: "Tastes just like home. Must try! 🥒"
+    }
+  ];
+
+  const cart = [];
+
+  function renderProducts() {
+    const list = document.getElementById("product-list");
+    list.innerHTML = "";
+    products.forEach(p => {
+      const stars = Array.from({ length: 5 }, (_, i) => `
+        <span class="${i < Math.floor(p.rating) ? '' : 'inactive'}">&#9733;</span>
+      `).join('');
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <img src="${p.image}" alt="${p.name}">
+        <div class="card-body">
+          <h3>${p.name}</h3>
+          <div class="rating">${stars} (${p.rating})</div>
+          <p>${p.description}</p>
+          <div class="price">₹${p.price}</div>
+          <button class="btn" onclick="addToCart(${p.id})">Add to Cart</button>
+          <div class="review"><strong>Customer:</strong> "${p.review}"</div>
+          <div class="review-box">
+            <textarea id="review-input-${p.id}" placeholder="Write your review..."></textarea>
+            <button class="btn" onclick="postReview(${p.id})">Post Review</button>
+            <div id="user-reviews-${p.id}" class="user-reviews"></div>
+          </div>
+        </div>`;
+      list.appendChild(div);
+    });
+  }
+
+  function postReview(id) {
+    const input = document.getElementById(`review-input-${id}`);
+    const reviewBox = document.getElementById(`user-reviews-${id}`);
+    const reviewText = input.value.trim();
+    if (reviewText) {
+      const p = document.createElement('p');
+      p.innerHTML = `<strong>You:</strong> "${reviewText}"`;
+      reviewBox.appendChild(p);
+      input.value = '';
+    }
+  }
+
+  function addToCart(id) {
+    const prod = products.find(p => p.id === id);
+    const exist = cart.find(i => i.id === id);
+    if (exist) exist.qty++;
+    else cart.push({ ...prod, qty: 1 });
+    renderCart();
+  }
+
+  function increaseQty(id) {
+    const item = cart.find(i => i.id === id);
+    if (item) item.qty++;
+    renderCart();
+  }
+
+  function decreaseQty(id) {
+    const item = cart.find(i => i.id === id);
+    if (item) {
+      item.qty--;
+      if (item.qty <= 0) {
+        removeFromCart(id);
+        return;
+      }
+    }
+    renderCart();
+  }
+
+  function removeFromCart(id) {
+    const index = cart.findIndex(i => i.id === id);
+    if (index !== -1) cart.splice(index, 1);
+    renderCart();
+  }
+
+  function renderCart() {
+    const ci = document.getElementById("cart-items");
+    const ct = document.getElementById("cart-total");
+    const title = document.getElementById("cart-title");
+    ci.innerHTML = "";
+    let total = 0, count = 0;
+    cart.forEach(item => {
+      total += item.qty * item.price;
+      count += item.qty;
+      ci.innerHTML += `
+        <div class="cart-item">
+          <span>${item.name} × ${item.qty}</span>
+          <div>
+            <div class="qty-btns">
+              <button onclick="increaseQty(${item.id})">+</button>
+              <button onclick="decreaseQty(${item.id})">−</button>
+              <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+            </div>
+            <span>₹${item.price * item.qty}</span>
+          </div>
+        </div>`;
+    });
+    ct.textContent = `Total: ₹${total}`;
+    title.setAttribute('data-count', count);
+  }
+
+  renderProducts();
+</script>
+
+</body>
+</html>
